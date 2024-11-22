@@ -3,21 +3,22 @@ package io.github.angrybirds.entities;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 
 public class RedBird extends Bird{
     private Texture texture;
     private Vector2 position;
     private float speed;  // Basic speed property
 
-    public RedBird(Vector2 startPosition) {
-        super(startPosition);
-        //this.texture = new Texture("RedBird(2).png");
+    public RedBird(World world,Vector2 startPosition,int radius) {
+        super(world,startPosition,radius);
+        this.texture = new Texture("RedBird(2).png");
         this.position = startPosition;
         this.speed = 0; // Speed can be updated on launch
     }
 
     public void render(SpriteBatch batch) {
-        //batch.draw(texture, position.x, position.y);
+        batch.draw(texture, position.x, position.y);
     }
 
     public void setPosition(Vector2 newPosition) {
