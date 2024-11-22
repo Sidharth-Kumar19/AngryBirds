@@ -37,11 +37,12 @@ public class Level1 implements Screen {
     private boolean birdloaded;
     private World world;
     private Slingshot slingshot;
-    public static final float PIXELS_PER_METER = 32f;
+    public static final float PIXELS_TO_METERS = 0.05f;
+    public static final float METERS_TO_PIXELS = 20f; // 1 meter = 20 pixels
     private static int n = 0;
 
     public Level1(AngryBirds game) {
-        world = new World(new Vector2(0, -19.6f),true);
+        world = new World(new Vector2(0, -98f/METERS_TO_PIXELS),true);
         this.game = game;
         batch = new SpriteBatch();
         map = new TmxMapLoader().load("Level1.1.tmx");
@@ -94,7 +95,6 @@ public class Level1 implements Screen {
             if (object instanceof RectangleMapObject) {
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
                 String type = (String) object.getProperties().get("type");
-
                 switch (type) {
                     case "dirtBlock":
                         blocks.add(new Dirt(new Vector2(rect.x, rect.y), 2));
@@ -158,7 +158,7 @@ public class Level1 implements Screen {
                 // Drag the bird to the touch position, constrained to slingshot's max distance
                 Vector2 direction = touchpoint.cpy().sub(slingAnchor);
                 direction.sub(new Vector2(32,32));
-                float maxDistance = 150; // Maximum stretch
+                float maxDistance = 75; // Maximum stretch
                 if(direction.len() > maxDistance){
                     direction.setLength(maxDistance);
                 }
@@ -170,7 +170,7 @@ public class Level1 implements Screen {
             if(isDragging){
                 isDragging = false;
                 Vector2 releasePosition = currentBird.getPosition();
-                Vector2 launchForce = slingAnchor.cpy().sub(releasePosition).scl(1000);
+                Vector2 launchForce = slingAnchor.cpy().sub(releasePosition).scl(30f);
                 //Vector2 launchVelocity = this.currentBird.getBody().getLinearVelocity().scl(0.5f); // Adjust multiplier
                 currentBird.applyForce(launchForce);
                 //System.out.println(launchForce);
@@ -180,7 +180,7 @@ public class Level1 implements Screen {
             }
         }
         batch.end();
-        world.step(1/90f,6,2);
+        world.step(1/60f,6,2);
     }
 
     @Override
