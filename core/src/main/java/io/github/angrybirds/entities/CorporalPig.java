@@ -11,13 +11,13 @@ public class CorporalPig extends Pig{
 
     public CorporalPig(Vector2 startPosition, int health) {
         super(startPosition,health);
-        this.texture = new Texture("CorporalPig(1).png");
+        //this.texture = new Texture("CorporalPig(1).png");
         this.position = startPosition;
         this.hp = health;
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(texture, position.x, position.y);
+        //batch.draw(texture, position.x, position.y);
     }
 
     public void takeDamage(int damage) {

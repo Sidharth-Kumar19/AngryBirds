@@ -5,19 +5,19 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 public class Steel extends Structures{
-    private Texture texture;
+    //private Texture texture;
     private Vector2 position;
     private int durability;
 
     public Steel(Vector2 startPosition, int health) {
         super(startPosition,health);
-        this.texture = new Texture("");
+        //this.texture = new Texture("");
         this.position = startPosition;
         this.durability = health;
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(texture, position.x, position.y);
+        //batch.draw(texture, position.x, position.y);
     }
 
     public void takeHit() {

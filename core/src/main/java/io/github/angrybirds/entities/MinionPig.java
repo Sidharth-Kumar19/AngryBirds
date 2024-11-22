@@ -11,18 +11,18 @@ public class MinionPig extends Pig{
 
     public MinionPig(Vector2 startPosition, int health) {
         super(startPosition,health);
-        this.texture = new Texture("MinionPig(1).png");
+        //this.texture = new Texture("MinionPig(1).png");
         this.position = startPosition;
         this.hp = health;
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(texture, position.x, position.y);
+        //batch.draw(texture, position.x, position.y);
     }
 
     public void takeDamage(int damage) {
         this.hp -= damage;
-        if(this.hp <= 0) {
+        if (this.hp <= 0) {
             // death of pig
         }
     }
