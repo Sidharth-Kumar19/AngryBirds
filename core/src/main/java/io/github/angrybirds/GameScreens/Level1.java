@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -19,6 +20,7 @@ import io.github.angrybirds.AngryBirds;
 import io.github.angrybirds.entities.*;
 
 import java.util.ArrayList;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
 public class Level1 implements Screen {
     private AngryBirds game;
@@ -40,9 +42,13 @@ public class Level1 implements Screen {
     public static final float PIXELS_TO_METERS = 0.05f;
     public static final float METERS_TO_PIXELS = 20f; // 1 meter = 20 pixels
     private static int n = 0;
+    private Box2DDebugRenderer debugRenderer;
+    private Ground ground;
+    private Bounds upperBound, leftBound, rightBound;
+    private static final float VELOCITY_THRESHOLD = 2f;
 
     public Level1(AngryBirds game) {
-        world = new World(new Vector2(0, -98f/METERS_TO_PIXELS),true);
+        world = new World(new Vector2(0, -196f/METERS_TO_PIXELS),true);
         this.game = game;
         batch = new SpriteBatch();
         map = new TmxMapLoader().load("Level1.1.tmx");
@@ -51,16 +57,25 @@ public class Level1 implements Screen {
         pigs = new ArrayList<>();
         blocks = new ArrayList<>();
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        loadEntitiesFromMap();
-//        winpage = new Texture("win_.png");
-//        losspage = new Texture("loss_[1](1).png");
-//        done = -1;
+        camera.setToOrtho(false, 1280, 708);
         birdloaded = false;
+        debugRenderer = new Box2DDebugRenderer();
+        loadEntitiesFromMap();
         this.slingAnchor = this.slingshot.getAnchorPoint();
+        float screenWidth = 1280;
+        float screenHeight = 720;
+        upperBound = new Bounds(world, new Vector2(0, screenHeight), new Vector2(screenWidth, screenHeight));
+        leftBound = new Bounds(world, new Vector2(0, 0),new Vector2(0, screenHeight));
+        rightBound = new Bounds(world, new Vector2(screenWidth, 0),new Vector2(screenWidth, screenHeight));
     }
 
     private void loadEntitiesFromMap() {
+        for (MapObject object : map.getLayers().get("Ground").getObjects()) {
+            if(object instanceof RectangleMapObject) {
+                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+                this.ground = new Ground(world,new Vector2(rect.x, rect.y),1280,96);
+            }
+        }
         for (MapObject object : map.getLayers().get("Entities").getObjects()) {
             if (object instanceof RectangleMapObject) {
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
@@ -71,13 +86,13 @@ public class Level1 implements Screen {
                         birds.add(new RedBird(world,new Vector2(rect.x, rect.y),32));
                         break;
                     case "blackBird":
-                        birds.add(new BlackBird(world,new Vector2(rect.x, rect.y),32));
+                        birds.add(new BlackBird(world,new Vector2(rect.x, rect.y),48));
                         break;
                     case "yellowBird":
                         birds.add(new YellowBird(world,new Vector2(rect.x, rect.y),32));
                         break;
                     case "minionPig":
-                        pigs.add(new MinionPig(new Vector2(rect.x, rect.y), 2));
+                        pigs.add(new MinionPig(world,new Vector2(rect.x, rect.y), 2,32));
                         break;
                     case "corporalPig":
                         pigs.add(new CorporalPig(new Vector2(rect.x, rect.y), 5));
@@ -100,7 +115,7 @@ public class Level1 implements Screen {
                         blocks.add(new Dirt(new Vector2(rect.x, rect.y), 2));
                         break;
                     case "woodBlock":
-                        blocks.add(new Wood(new Vector2(rect.x, rect.y), 5));
+                        blocks.add(new Wood(world,new Vector2(rect.x, rect.y), 5,16));
                         break;
                     case "steelBlock":
                         blocks.add(new Steel(new Vector2(rect.x, rect.y), 10));
@@ -116,6 +131,7 @@ public class Level1 implements Screen {
 
     @Override
     public void render(float delta){
+        world.step(1/60f,6,2);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         mapRenderer.setView(camera);
@@ -123,24 +139,28 @@ public class Level1 implements Screen {
 
         batch.begin();
         if(!birdloaded){
-            if(n>birds.size()) {
-
-            }
             birdloaded = true;
-            this.currentBird = this.birds.get(n);
-            birds.get(n).setPosition(this.slingAnchor);
-            n++;
+            this.currentBird = this.birds.get(0);
+            birds.get(0).setPosition(this.slingAnchor);
+        }
+        else{
+            if (currentBird != null && this.currentBird.getBody().getType() == BodyDef.BodyType.DynamicBody) {
+                if (this.currentBird.getBody().getLinearVelocity().len() < VELOCITY_THRESHOLD){
+                    world.destroyBody(this.currentBird.getBody());
+                    birds.remove(currentBird);
+                    currentBird = null;
+                    birdloaded = false;
+                }
+            }
         }
 
         slingshot.render(batch);
         for(Bird bird : birds){
             bird.render(batch);
         }
-
         for(Pig pig : pigs){
             pig.render(batch);
         }
-
         for(Structures block : blocks){
             block.render(batch);
         }
@@ -148,16 +168,11 @@ public class Level1 implements Screen {
         if(Gdx.input.isTouched()){
             Vector2 touchpoint = new Vector2(Gdx.input.getX(),Gdx.graphics.getHeight()-Gdx.input.getY());
             Rectangle dragbox = new Rectangle(slingAnchor.x-32,slingAnchor.y-32,64,64);
-
             if(!isDragging && currentBird != null && dragbox.contains(touchpoint)){
-                // If not already dragging and touch is near the bird, start dragging
                 isDragging = true;
-                currentBird.changeType();
             }
             if(isDragging){
-                // Drag the bird to the touch position, constrained to slingshot's max distance
                 Vector2 direction = touchpoint.cpy().sub(slingAnchor);
-                direction.sub(new Vector2(32,32));
                 float maxDistance = 75; // Maximum stretch
                 if(direction.len() > maxDistance){
                     direction.setLength(maxDistance);
@@ -166,21 +181,17 @@ public class Level1 implements Screen {
             }
         }
         else{
-            // If touch is released and was dragging, launch the bird
             if(isDragging){
                 isDragging = false;
                 Vector2 releasePosition = currentBird.getPosition();
-                Vector2 launchForce = slingAnchor.cpy().sub(releasePosition).scl(30f);
-                //Vector2 launchVelocity = this.currentBird.getBody().getLinearVelocity().scl(0.5f); // Adjust multiplier
+                Vector2 launchForce = slingAnchor.cpy().sub(releasePosition).scl(3f);
+                currentBird.changeType();
                 currentBird.applyForce(launchForce);
-                //System.out.println(launchForce);
                 Gdx.app.log("Bird Launch", "Position: " + currentBird.getPosition() + ", Force: " + launchForce);
-                currentBird = null;
-                //birdloaded = false;
             }
         }
         batch.end();
-        world.step(1/60f,6,2);
+        debugRenderer.render(world, camera.combined);
     }
 
     @Override

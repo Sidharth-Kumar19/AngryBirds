@@ -18,8 +18,7 @@ public class Slingshot {
     }
 
     public Vector2 getAnchorPoint() {
-        // Return the anchor point where birds are positioned for the launch
-        return position.cpy().add(15, 100); // Adjust based on texture alignment
+        return position.cpy().add(15, 100);
     }
 
     public void dispose() {

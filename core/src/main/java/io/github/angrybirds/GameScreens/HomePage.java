@@ -25,7 +25,7 @@ public class HomePage implements Screen {
             public void run() {
                 game.setScreen(new StartPage(game));
             }
-        }, 3);
+        }, 2);
     }
 
     @Override

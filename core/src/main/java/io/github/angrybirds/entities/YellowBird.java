@@ -21,21 +21,18 @@ public class YellowBird extends Bird {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
-        Vector2 scaledPosition = new Vector2(startPosition.x * PIXELS_TO_METERS, startPosition.y * PIXELS_TO_METERS);
-        //bodyDef.position.set(new Vector2(startPosition.x+32,startPosition.y+32));
+        Vector2 scaledPosition = new Vector2((startPosition.x+radius) * PIXELS_TO_METERS, (startPosition.y+radius) * PIXELS_TO_METERS);
         bodyDef.position.set(scaledPosition);
 
         body = world.createBody(bodyDef);
 
-        // Create a circular shape for the bird
         CircleShape shape = new CircleShape();
-        shape.setRadius(radius);
+        shape.setRadius(radius*PIXELS_TO_METERS);
 
-        // Define fixture properties
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 0.1f; // Adjust as needed
-        fixtureDef.restitution = 0f; // Bounciness
+        fixtureDef.density = 1f;
+        fixtureDef.restitution = 0.5f;
         fixtureDef.friction = 0.4f;
 
         body.createFixture(fixtureDef);
@@ -43,13 +40,12 @@ public class YellowBird extends Bird {
     }
 
     @Override
-    public void render(SpriteBatch batch) {
-        // Draw the texture at the position of the body in the physics world
+    public void render(SpriteBatch batch){
         Vector2 physicsPosition = body.getPosition();
         float x = physicsPosition.x * METERS_TO_PIXELS;
         float y = physicsPosition.y * METERS_TO_PIXELS;
-        //float radius = radius; // Add a getter for radius in `Bird` if needed
-        batch.draw(texture, x - 32, y - 32);
+        batch.draw(texture, x - radius, y - radius);
+
     }
 
     @Override
@@ -59,11 +55,11 @@ public class YellowBird extends Bird {
 
     @Override
     public Vector2 getPosition(){
-        return body.getPosition();
+        Vector2 ans = body.getPosition();
+        return new Vector2(ans.x*METERS_TO_PIXELS-radius,ans.y*METERS_TO_PIXELS-radius);
     }
     @Override
     public void applyForce(Vector2 force) {
-        // Add any specific YellowBird logic, if needed
         body.applyLinearImpulse(force,body.getWorldCenter(),true); // Use the parent's logic
     }
 
@@ -80,6 +76,6 @@ public class YellowBird extends Bird {
 
     @Override
     public void setPosition(Vector2 newPosition) {
-        body.setTransform(new Vector2((newPosition.x+32)*PIXELS_TO_METERS,(newPosition.y+32)*PIXELS_TO_METERS),body.getAngle());
+        body.setTransform(new Vector2((newPosition.x)*PIXELS_TO_METERS,(newPosition.y)*PIXELS_TO_METERS),body.getAngle());
     }
 }

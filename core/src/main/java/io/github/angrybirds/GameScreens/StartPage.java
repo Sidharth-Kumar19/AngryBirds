@@ -31,7 +31,7 @@ public class StartPage implements Screen{
     public void render(float delta) {
         //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        batch.draw(Startpagescreen,0,0);
+        batch.draw(Startpagescreen,0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         batch.end();
 
         if(Gdx.input.justTouched()){

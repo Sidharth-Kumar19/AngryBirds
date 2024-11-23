@@ -29,7 +29,6 @@ public class Bird{
 
     public void updatePosition(float deltaTime) {
         // Placeholder for moving the bird based on physics
-        position.add(speed * deltaTime, speed * deltaTime);
     }
 
     public void dispose() {
