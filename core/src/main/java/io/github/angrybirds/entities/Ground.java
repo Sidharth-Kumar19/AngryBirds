@@ -17,25 +17,23 @@ public class Ground {
         this.width = width;
         this.height = height;
 
-        // Define the body
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.position.set(position.x * PIXELS_TO_METERS, position.y * PIXELS_TO_METERS);
 
         body = world.createBody(bodyDef);
 
-        // Define the shape
         PolygonShape shape = new PolygonShape();
         shape.setAsBox((width) * PIXELS_TO_METERS, (height) * PIXELS_TO_METERS);
 
-        // Define the fixture
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 0f; // Ground should not move
-        fixtureDef.friction = 0.4f; // Adjust friction for sliding
-        fixtureDef.restitution = 0f; // No bounce
+        fixtureDef.density = 0f;
+        fixtureDef.friction = 0.4f;
+        fixtureDef.restitution = 0f;
+        Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(this);
 
-        body.createFixture(fixtureDef);
         shape.dispose();
     }
 

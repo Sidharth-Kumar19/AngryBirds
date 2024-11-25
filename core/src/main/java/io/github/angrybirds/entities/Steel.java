@@ -2,32 +2,13 @@ package io.github.angrybirds.entities;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 
 public class Steel extends Structures{
-    private Texture texture;
-    private Vector2 position;
-    private int durability;
-
-    public Steel(Vector2 startPosition, int health) {
-        super(startPosition,health);
-        this.texture = new Texture("");
-        this.position = startPosition;
-        this.durability = health;
-    }
-
-    public void render(SpriteBatch batch) {
-        batch.draw(texture, position.x, position.y);
-    }
-
-    public void takeHit() {
-        durability--;
-        if (durability <= 0) {
-
-        }
-    }
-
-    public void dispose() {
-        //texture.dispose();
+    public Steel(World world, Vector2 startPosition, int health, int radius) {
+        super(world,startPosition,health,radius,new TextureRegion(new Texture("Blocks16x16(2).png"), 64, 192, 32, 32));
     }
 }

@@ -46,6 +46,7 @@ public class Level1 implements Screen {
     private Ground ground;
     private Bounds upperBound, leftBound, rightBound;
     private static final float VELOCITY_THRESHOLD = 2f;
+    private boolean launched;
 
     public Level1(AngryBirds game) {
         world = new World(new Vector2(0, -196f/METERS_TO_PIXELS),true);
@@ -63,10 +64,14 @@ public class Level1 implements Screen {
         loadEntitiesFromMap();
         this.slingAnchor = this.slingshot.getAnchorPoint();
         float screenWidth = 1280;
-        float screenHeight = 720;
+        float screenHeight = 708;
         upperBound = new Bounds(world, new Vector2(0, screenHeight), new Vector2(screenWidth, screenHeight));
         leftBound = new Bounds(world, new Vector2(0, 0),new Vector2(0, screenHeight));
         rightBound = new Bounds(world, new Vector2(screenWidth, 0),new Vector2(screenWidth, screenHeight));
+        world.setContactListener(new GameContactListener());
+        launched = false;
+        winpage = new Texture("win_.png");
+        losspage = new Texture("loss_[1](1).png");
     }
 
     private void loadEntitiesFromMap() {
@@ -95,10 +100,10 @@ public class Level1 implements Screen {
                         pigs.add(new MinionPig(world,new Vector2(rect.x, rect.y), 2,32));
                         break;
                     case "corporalPig":
-                        pigs.add(new CorporalPig(new Vector2(rect.x, rect.y), 5));
+                        pigs.add(new CorporalPig(world,new Vector2(rect.x, rect.y), 5,32));
                         break;
                     case "kingPig":
-                        pigs.add(new KingPig(new Vector2(rect.x, rect.y), 10));
+                        pigs.add(new KingPig(world,new Vector2(rect.x, rect.y), 10,48));
                         break;
                     case "slingshot":
                         this.slingshot = new Slingshot(new Vector2(rect.x,rect.y));
@@ -112,13 +117,13 @@ public class Level1 implements Screen {
                 String type = (String) object.getProperties().get("type");
                 switch (type) {
                     case "dirtBlock":
-                        blocks.add(new Dirt(new Vector2(rect.x, rect.y), 2));
+                        blocks.add(new Dirt(world,new Vector2(rect.x, rect.y), 2,16));
                         break;
                     case "woodBlock":
                         blocks.add(new Wood(world,new Vector2(rect.x, rect.y), 5,16));
                         break;
                     case "steelBlock":
-                        blocks.add(new Steel(new Vector2(rect.x, rect.y), 10));
+                        blocks.add(new Steel(world,new Vector2(rect.x, rect.y), 10,16));
                         break;
                 }
             }
@@ -138,6 +143,16 @@ public class Level1 implements Screen {
         mapRenderer.render();
 
         batch.begin();
+        if(didWin()){
+            batch.draw(winpage,140,76);
+            batch.end();
+            return;
+        }
+        else if(didLose()){
+            batch.draw(losspage,400,0);
+            batch.end();
+            return;
+        }
         if(!birdloaded){
             birdloaded = true;
             this.currentBird = this.birds.get(0);
@@ -150,6 +165,7 @@ public class Level1 implements Screen {
                     birds.remove(currentBird);
                     currentBird = null;
                     birdloaded = false;
+                    launched = false;
                 }
             }
         }
@@ -158,14 +174,28 @@ public class Level1 implements Screen {
         for(Bird bird : birds){
             bird.render(batch);
         }
-        for(Pig pig : pigs){
-            pig.render(batch);
-        }
-        for(Structures block : blocks){
-            block.render(batch);
+        for (int i = 0; i < pigs.size(); i++) {
+            Pig pig = pigs.get(i);
+            if (!pig.isAlive()) {
+                pigs.remove(i);
+                i--;
+            } else {
+                pig.render(batch);
+            }
         }
 
-        if(Gdx.input.isTouched()){
+        for (int i = 0; i < blocks.size(); i++) {
+            Structures block = blocks.get(i);
+            if (!block.isStanding()) {
+                blocks.remove(i);
+                i--;
+            } else {
+                block.render(batch);
+            }
+        }
+
+
+        if(!launched && Gdx.input.isTouched()){
             Vector2 touchpoint = new Vector2(Gdx.input.getX(),Gdx.graphics.getHeight()-Gdx.input.getY());
             Rectangle dragbox = new Rectangle(slingAnchor.x-32,slingAnchor.y-32,64,64);
             if(!isDragging && currentBird != null && dragbox.contains(touchpoint)){
@@ -185,13 +215,23 @@ public class Level1 implements Screen {
                 isDragging = false;
                 Vector2 releasePosition = currentBird.getPosition();
                 Vector2 launchForce = slingAnchor.cpy().sub(releasePosition).scl(3f);
+                launchForce.scl(currentBird.getSpeed());
                 currentBird.changeType();
                 currentBird.applyForce(launchForce);
-                Gdx.app.log("Bird Launch", "Position: " + currentBird.getPosition() + ", Force: " + launchForce);
+                launched = true;
+                //Gdx.app.log("Bird Launch", "Position: " + currentBird.getPosition() + ", Force: " + launchForce);
             }
         }
         batch.end();
         debugRenderer.render(world, camera.combined);
+    }
+
+    public boolean didWin(){
+        return pigs.isEmpty();
+    }
+
+    public boolean didLose(){
+        return birds.isEmpty();
     }
 
     @Override
