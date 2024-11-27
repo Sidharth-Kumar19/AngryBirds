@@ -47,6 +47,8 @@ public class Level1 implements Screen {
     private Bounds upperBound, leftBound, rightBound;
     private static final float VELOCITY_THRESHOLD = 2f;
     private boolean launched;
+    private boolean isPaused = false;
+
 
     public Level1(AngryBirds game) {
         world = new World(new Vector2(0, -196f/METERS_TO_PIXELS),true);
@@ -72,6 +74,9 @@ public class Level1 implements Screen {
         launched = false;
         winpage = new Texture("win_.png");
         losspage = new Texture("loss_[1](1).png");
+        Texture pauseButtonTexture;
+        pauseButtonTexture = new Texture("pause_button.png");
+
     }
 
     private void loadEntitiesFromMap() {
@@ -133,6 +138,20 @@ public class Level1 implements Screen {
     public void show() {
 
     }
+    private boolean isButtonClicked(float touchX, float touchY, float x, float y, float width, float height) {
+        // Check if the touch is inside the button region and if the touch is down and then up.
+        if (Gdx.input.justTouched()) {
+
+            touchX = Gdx.input.getX();
+            touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
+
+            // Check if the touch is within the button bounds
+            if (touchX >= x && touchX <= x + width && touchY >= y && touchY <= y + height) {
+                return true; // Button was clicked
+            }
+        }
+        return false;
+    }
 
     @Override
     public void render(float delta){
@@ -143,13 +162,35 @@ public class Level1 implements Screen {
         mapRenderer.render();
 
         batch.begin();
+        float touchX = Gdx.input.getX();
+        float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
         if(didWin()){
             batch.draw(winpage,140,76);
+            if (isButtonClicked(touchX, touchY, 453, 138, 90, 90)) {
+                game.setScreen(new LevelSelection(game));
+
+            }
+            if (isButtonClicked(touchX, touchY, 592, 138, 90, 90)) {
+                game.setScreen(new Level1(game));
+
+            }
+            if (isButtonClicked(touchX, touchY, 734, 138, 90, 90)) {
+                game.setScreen(new Level2(game));
+
+            }
             batch.end();
             return;
         }
         else if(didLose()){
             batch.draw(losspage,400,0);
+            if (isButtonClicked(touchX, touchY, 505, 115, 100, 100)) {
+                game.setScreen(new LevelSelection(game));
+
+            }
+            if (isButtonClicked(touchX, touchY,  669, 115, 100, 100)) {
+                game.setScreen(new Level1(game));
+
+            }
             batch.end();
             return;
         }

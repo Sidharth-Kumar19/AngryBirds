@@ -22,7 +22,9 @@ public class GameScreen implements Screen {
 
         // Pause Button
         pauseButton = new TextButton("Pause", skin);
+
         pauseButton.setPosition(700, 400);  // Example position
+
         pauseButton.setSize(100, 50);
 
         pauseButton.addListener(new ClickListener() {
