@@ -75,7 +75,7 @@ public class Level1 implements Screen {
         winpage = new Texture("win_.png");
         losspage = new Texture("loss_[1](1).png");
         Texture pauseButtonTexture;
-        pauseButtonTexture = new Texture("pause_button.png");
+        pauseButtonTexture = new Texture("PauseButton.png");
 
     }
 
