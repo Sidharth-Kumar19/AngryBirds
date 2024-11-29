@@ -1,7 +1,9 @@
 package io.github.angrybirds.GameScreens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
 import io.github.angrybirds.AngryBirds;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,13 +16,14 @@ public class StartPage implements Screen{
     private AngryBirds game;
     private Texture Startpagescreen;
     private Rectangle startButton;
+    private Circle quitButton;
     private SpriteBatch batch;
 
     public StartPage(AngryBirds game) {
         this.game = game;
         batch = new SpriteBatch();
         Startpagescreen = new Texture("StartPage.png");
-
+        quitButton = new Circle(40,40,20);
         startButton = new Rectangle(530,240,215,105);
     }
 
@@ -29,7 +32,7 @@ public class StartPage implements Screen{
 
     @Override
     public void render(float delta) {
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         batch.draw(Startpagescreen,0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         batch.end();
@@ -38,6 +41,9 @@ public class StartPage implements Screen{
             Vector2 touchpoint = new Vector2(Gdx.input.getX(),Gdx.graphics.getHeight()-Gdx.input.getY());
             if(startButton.contains(touchpoint)){
                 game.setScreen(new LevelSelection(game));
+            }
+            else if(quitButton.contains(touchpoint)){
+                Gdx.app.exit();
             }
         }
 

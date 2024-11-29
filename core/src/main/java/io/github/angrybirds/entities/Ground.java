@@ -29,7 +29,7 @@ public class Ground {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 0f;
-        fixtureDef.friction = 0.4f;
+        fixtureDef.friction = 1f;
         fixtureDef.restitution = 0f;
         Fixture fixture = body.createFixture(fixtureDef);
         fixture.setUserData(this);

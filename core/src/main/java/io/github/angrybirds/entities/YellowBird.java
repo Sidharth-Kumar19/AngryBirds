@@ -17,7 +17,7 @@ public class YellowBird extends Bird {
         this.texture = new Texture("YellowBird(1).png");
         this.radius = radius;
         this.damage = 2;
-        this.speedMultiplier = 3;
+        this.speedMultiplier = 2.5f;
     }
 
     @Override

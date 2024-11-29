@@ -27,7 +27,7 @@ import java.util.Objects;
 
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
-public class Level1 implements Screen{
+public class Level3 implements Screen{
     private AngryBirds game;
     private SpriteBatch batch;
     private TiledMap map;
@@ -56,11 +56,11 @@ public class Level1 implements Screen{
     private boolean newGame;
     private LevelData lData;
 
-    public Level1(AngryBirds game, boolean isNewGame, LevelData d){
+    public Level3(AngryBirds game, boolean isNewGame, LevelData d){
         world = new World(new Vector2(0, -19.6f),true);
         this.game = game;
         batch = new SpriteBatch();
-        map = new TmxMapLoader().load("Level1.1.tmx");
+        map = new TmxMapLoader().load("Level3.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map);
         birds = new ArrayList<>();
         pigs = new ArrayList<>();
@@ -75,44 +75,7 @@ public class Level1 implements Screen{
             loadEntitiesFromMap();
         }
         else{
-            for(BirdData b : lData.birdDataList){
-                if(Objects.equals(b.getType(), "yellowBird")){
-                    birds.add(new YellowBird(world,b.getPosition(),b.getRadius()));
-                }
-                else if(Objects.equals(b.getType(), "redBird")){
-                    birds.add(new RedBird(world,b.getPosition(),b.getRadius()));
-                }
-                else if(Objects.equals(b.getType(), "blackBird")){
-                    birds.add(new BlackBird(world,b.getPosition(),b.getRadius()));
-                }
-            }
-
-            for(PigData p : lData.pigDataList){
-                if(Objects.equals(p.getType(), "minionPig")){
-                    pigs.add(new MinionPig(world,p.getPosition(),p.getHP(),p.getRadius()));
-                }
-                else if(Objects.equals(p.getType(), "corporalPig")){
-                    pigs.add(new CorporalPig(world,p.getPosition(),p.getHP(),p.getRadius()));
-                }
-                else if(Objects.equals(p.getType(), "kingPig")){
-                    pigs.add(new KingPig(world,p.getPosition(),p.getHP(),p.getRadius()));
-                }
-            }
-
-            for(StructData s : lData.structDataList){
-                if(Objects.equals(s.getType(), "woodBlock")){
-                    blocks.add(new Wood(world,s.getPosition(),s.getDurability(),s.getRadius()));
-                }
-                else if(Objects.equals(s.getType(), "steelBlock")){
-                    blocks.add(new Steel(world,s.getPosition(),s.getDurability(),s.getRadius()));
-                }
-                else if(Objects.equals(s.getType(), "dirtBlock")){
-                    blocks.add(new Dirt(world, s.getPosition(), s.getDurability(), s.getRadius()));
-                }
-            }
-            this.ground = new Ground(world,new Vector2(0, 0),1280,96);
-            this.slingshot = new Slingshot(new Vector2(192,96));
-            System.out.println(pigs.size());
+            loadLevel();
         }
         this.slingAnchor = this.slingshot.getAnchorPoint();
         float screenWidth = 1280;
@@ -215,10 +178,10 @@ public class Level1 implements Screen{
                     game.setScreen(new LevelSelection(game));
                 }
                 else if(winRestart.contains(touchpoint)){
-                    game.setScreen(new Level1(game,true,new LevelData()));
+                    game.setScreen(new Level3(game,true,new LevelData()));
                 }
                 else if(next.contains(touchpoint)){
-                    game.setScreen(new Level2(game,true,new LevelData()));
+                    game.setScreen(new Level1(game,true,new LevelData()));
                 }
             }
             return;
@@ -232,7 +195,7 @@ public class Level1 implements Screen{
                     game.setScreen(new LevelSelection(game));
                 }
                 else if(loseRestart.contains(touchpoint)){
-                    game.setScreen(new Level1(game,true,new LevelData()));
+                    game.setScreen(new Level3(game,true,new LevelData()));
                 }
             }
             return;
@@ -247,7 +210,7 @@ public class Level1 implements Screen{
                     game.setScreen(new LevelSelection(game));
                 }
                 else if(pauseRestart.contains(touchpoint)){
-                    game.setScreen(new Level1(game,true,new LevelData()));
+                    game.setScreen(new Level3(game,true,new LevelData()));
                 }
                 else if(unPause.contains(touchpoint)){
                     isPaused = false;
@@ -375,10 +338,10 @@ public class Level1 implements Screen{
                 birds.add(new YellowBird(world,b.getPosition(),b.getRadius()));
             }
             else if(Objects.equals(b.getType(), "redBird")){
-                birds.add(new RedBird(world,b.getPosition(),b.getRadius()));
+                birds.add(new YellowBird(world,b.getPosition(),b.getRadius()));
             }
             else if(Objects.equals(b.getType(), "blackBird")){
-                birds.add(new BlackBird(world,b.getPosition(),b.getRadius()));
+                birds.add(new YellowBird(world,b.getPosition(),b.getRadius()));
             }
         }
 
@@ -405,13 +368,10 @@ public class Level1 implements Screen{
                 blocks.add(new Dirt(world, s.getPosition(), s.getDurability(), s.getRadius()));
             }
         }
-        this.ground = new Ground(world,new Vector2(0, 0),1280,96);
-        this.slingshot = new Slingshot(new Vector2(192,96));
-        System.out.println(pigs.size());
     }
 
     public void saveLevel(){
-        try(ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream("C://Users//Dell//Desktop//Programming//Projects//AngryBirdsGame//d1.dat"))){
+        try (ObjectOutputStream o1 = new ObjectOutputStream(new FileOutputStream("DataStorage3.dat"))) {
             ArrayList<BirdData> SaveBird = new ArrayList<>();
             ArrayList<PigData> SavePigs = new ArrayList<>();
             ArrayList<StructData> SaveStruct = new ArrayList<>();
@@ -425,14 +385,13 @@ public class Level1 implements Screen{
             for(Structures s : blocks){
                 SaveStruct.add(new StructData(s));
             }
-            LevelData d = new LevelData();
 
-            d.birdDataList = SaveBird;
-            d.pigDataList = SavePigs;
-            d.structDataList = SaveStruct;
+            lData.birdDataList = SaveBird;
+            lData.pigDataList = SavePigs;
+            lData.structDataList = SaveStruct;
 
-            obj.writeObject(d);
-            System.out.println("Data saved successfully to " + "d1.dat");
+            o1.writeObject(lData);
+            System.out.println("Data saved successfully to " + "DataStorage3.dat");
         }
         catch(IOException e){
             System.err.println("Error saving data: " + e.getMessage());

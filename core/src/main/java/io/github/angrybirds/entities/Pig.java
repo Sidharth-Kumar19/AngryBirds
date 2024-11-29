@@ -7,17 +7,22 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import static io.github.angrybirds.GameScreens.Level1.METERS_TO_PIXELS;
 import static io.github.angrybirds.GameScreens.Level1.PIXELS_TO_METERS;
+import static java.lang.Math.sqrt;
 
 public class Pig{
     private int hp;
     private Texture texture;
     private int radius;
     private Body body;
+    private World world;
+    private int type;
 
-    public Pig(World world,Vector2 startPosition, int hp, int radius, Texture texture){
+    public Pig(World world,Vector2 startPosition, int hp, int radius, Texture texture, int type){
+        this.world = world;
         this.hp = hp;
         this.texture = texture;
         this.radius = radius;
+        this.type = type;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -31,9 +36,9 @@ public class Pig{
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
-        fixtureDef.restitution = 0.5f;
-        fixtureDef.friction = 0.4f;
+        fixtureDef.density = 2f;
+        fixtureDef.restitution = 0f;
+        fixtureDef.friction = 1f;
         Fixture fixture = body.createFixture(fixtureDef);
         fixture.setUserData(this);
         shape.dispose();
@@ -54,7 +59,19 @@ public class Pig{
         return this.hp>0;
     }
 
-    public void dispose() {
-        texture.dispose();
+    public void dispose(){
+        world.destroyBody(body);
+    }
+
+    public double getLinearVelocity(){
+        Vector2 vel = body.getLinearVelocity();
+        return sqrt(vel.x*vel.x + vel.y*vel.y);
+    }
+    public int getType(){
+        return type;
+    }
+    public Vector2 getPosition() {
+        Vector2 ans = body.getPosition();
+        return new Vector2(ans.x*METERS_TO_PIXELS-radius,ans.y*METERS_TO_PIXELS-radius);
     }
 }

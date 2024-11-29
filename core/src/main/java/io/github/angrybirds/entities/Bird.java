@@ -6,13 +6,16 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import static io.github.angrybirds.GameScreens.Level1.PIXELS_TO_METERS;
 import static io.github.angrybirds.GameScreens.Level1.METERS_TO_PIXELS;
+import static java.lang.Math.sqrt;
 
 public class Bird{
     private Texture texture;
     private int radius;
     private Body body;
+    private World world;
 
     public Bird(World world, Vector2 startPosition, int radius, Texture texture) {
+        this.world = world;
         this.texture = texture;
         this.radius = radius;
 
@@ -28,8 +31,8 @@ public class Bird{
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
-        fixtureDef.restitution = 0.3f;
-        fixtureDef.friction = 0.4f;
+        fixtureDef.restitution = 0.1f;
+        fixtureDef.friction = 1f;
 
         Fixture fixture = body.createFixture(fixtureDef);
         fixture.setUserData(this);
@@ -66,7 +69,7 @@ public class Bird{
     }
 
     public void dispose() {
-
+        world.destroyBody(body);
     }
 
     public int getDamage(){
@@ -75,5 +78,10 @@ public class Bird{
 
     public float getSpeed(){
         return 1;
+    }
+
+    public double getLinearVelocity() {
+        Vector2 vel = body.getLinearVelocity();
+        return sqrt(vel.x*vel.x + vel.y*vel.y);
     }
 }

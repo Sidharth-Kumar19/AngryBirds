@@ -11,7 +11,7 @@ public class KingPig extends Pig{
     private int hp;
 
     public KingPig(World world, Vector2 startPosition, int health, int radius) {
-        super(world,startPosition, health,radius,new Texture("KingPig(3).png"));
+        super(world,startPosition, health,radius,new Texture("KingPig(3).png"),2);
     }
 
 }

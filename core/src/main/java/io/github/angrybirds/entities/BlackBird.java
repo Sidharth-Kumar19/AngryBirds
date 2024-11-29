@@ -16,7 +16,7 @@ public class BlackBird extends Bird {
         this.texture = new Texture("Bomb(4).png");
         this.radius = radius;
         this.damage = 6;
-        this.speedMultiplier = 1.5f;
+        this.speedMultiplier = 1.75f;
     }
 
     @Override

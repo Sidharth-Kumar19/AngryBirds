@@ -11,6 +11,6 @@ import static io.github.angrybirds.GameScreens.Level1.PIXELS_TO_METERS;
 
 public class Wood extends Structures{
     public Wood(World world, Vector2 startPosition, int health, int radius) {
-        super(world,startPosition,health,radius,new TextureRegion(new Texture("Blocks16x16(2).png"), 64, 192, 32, 32));
+        super(world,startPosition,health,radius,new TextureRegion(new Texture("Blocks16x16(2).png"), 64, 192, 32, 32),0);
     }
 }

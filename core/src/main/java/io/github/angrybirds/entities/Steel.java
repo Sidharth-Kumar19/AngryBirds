@@ -9,6 +9,6 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class Steel extends Structures{
     public Steel(World world, Vector2 startPosition, int health, int radius) {
-        super(world,startPosition,health,radius,new TextureRegion(new Texture("Blocks16x16(2).png"), 64, 192, 32, 32));
+        super(world,startPosition,health,radius,new TextureRegion(new Texture("Blocks16x16(2).png"), 128, 128, 32, 32),1);
     }
 }

@@ -15,7 +15,7 @@ public class MinionPig extends Pig{
     private Body body;
 
     public MinionPig(World world, Vector2 startPosition, int health, int radius) {
-        super(world,startPosition, health,radius,new Texture("MinionPig(1).png"));
+        super(world,startPosition, health,radius,new Texture("MinionPig(1).png"),0);
 
     }
 

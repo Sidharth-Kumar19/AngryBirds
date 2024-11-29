@@ -11,7 +11,7 @@ public class CorporalPig extends Pig{
     private int hp;
 
     public CorporalPig(World world, Vector2 startPosition, int health, int radius) {
-        super(world,startPosition, health,radius,new Texture("CorporalPig(1).png"));
+        super(world,startPosition, health,radius,new Texture("CorporalPig(1).png"),1);
 
     }
 }

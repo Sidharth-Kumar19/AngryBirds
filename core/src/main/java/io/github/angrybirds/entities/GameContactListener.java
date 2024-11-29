@@ -3,6 +3,7 @@ package io.github.angrybirds.entities;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class GameContactListener implements ContactListener {
+    private static final float minVel = 0.3f;
 
     @Override
     public void beginContact(Contact contact){
@@ -11,12 +12,18 @@ public class GameContactListener implements ContactListener {
         if(fixtureA.getUserData() instanceof Bird && fixtureB.getUserData() instanceof Pig){
             Pig pig = (Pig)fixtureB.getUserData();
             Bird bird = (Bird)fixtureA.getUserData();
+            if(pig.getLinearVelocity()<=minVel && bird.getLinearVelocity()<=minVel) {
+                return;
+            }
             pig.takeDamage(bird.getDamage());
             //System.out.println("Collision began between " + fixtureA.getUserData() + " and " + fixtureB.getUserData());
         }
         else if(fixtureB.getUserData() instanceof Bird && fixtureA.getUserData() instanceof Pig){
             Pig pig = (Pig)fixtureA.getUserData();
             Bird bird = (Bird)fixtureB.getUserData();
+            if(pig.getLinearVelocity()<=minVel && bird.getLinearVelocity()<=minVel) {
+                return;
+            }
             pig.takeDamage(bird.getDamage());
             //System.out.println("Collision began between " + fixtureB.getUserData() + " and " + fixtureB.getUserData());
         }
@@ -24,12 +31,18 @@ public class GameContactListener implements ContactListener {
         if(fixtureA.getUserData() instanceof Bird && fixtureB.getUserData() instanceof Structures){
             Structures struct = (Structures)fixtureB.getUserData();
             Bird bird = (Bird)fixtureA.getUserData();
+            if(struct.getLinearVelocity()<=minVel && bird.getLinearVelocity()<=minVel) {
+                return;
+            }
             struct.takeHit(bird.getDamage());
             //System.out.println("Collision began between " + fixtureA.getUserData() + " and " + fixtureB.getUserData());
         }
         else if(fixtureB.getUserData() instanceof Bird && fixtureA.getUserData() instanceof Structures){
             Structures struct = (Structures)fixtureA.getUserData();
             Bird bird = (Bird)fixtureB.getUserData();
+            if(struct.getLinearVelocity()<=minVel && bird.getLinearVelocity()<=minVel) {
+                return;
+            }
             struct.takeHit(bird.getDamage());
             //System.out.println("Collision began between " + fixtureB.getUserData() + " and " + fixtureB.getUserData());
         }
@@ -37,6 +50,9 @@ public class GameContactListener implements ContactListener {
         if(fixtureA.getUserData() instanceof Structures && fixtureB.getUserData() instanceof Pig){
             Pig pig = (Pig)fixtureB.getUserData();
             Structures struct = (Structures)fixtureA.getUserData();
+            if(struct.getLinearVelocity()<=minVel || pig.getLinearVelocity()<=minVel) {
+                return;
+            }
             pig.takeDamage(1);
             struct.takeHit(1);
             //System.out.println("Collision began between " + fixtureA.getUserData() + " and " + fixtureB.getUserData());
@@ -44,6 +60,9 @@ public class GameContactListener implements ContactListener {
         else if(fixtureB.getUserData() instanceof Structures && fixtureA.getUserData() instanceof Pig){
             Pig pig = (Pig)fixtureA.getUserData();
             Structures struct = (Structures)fixtureB.getUserData();
+            if(struct.getLinearVelocity()<=minVel || pig.getLinearVelocity()<=minVel) {
+                return;
+            }
             pig.takeDamage(1);
             struct.takeHit(1);
             //System.out.println("Collision began between " + fixtureB.getUserData() + " and " + fixtureB.getUserData());
@@ -55,7 +74,7 @@ public class GameContactListener implements ContactListener {
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
 
-        System.out.println("Collision ended between " + fixtureA.getUserData() + " and " + fixtureB.getUserData());
+        ////System.out.println("Collision ended between " + fixtureA.getUserData() + " and " + fixtureB.getUserData());
     }
 
     @Override
