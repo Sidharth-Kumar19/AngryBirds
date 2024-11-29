@@ -18,6 +18,10 @@ public class StartPage implements Screen{
     private Rectangle startButton;
     private Circle quitButton;
     private SpriteBatch batch;
+    private final int quitX = 0;
+    private final int quitY = 0;
+    private final int quitWidth = 100;
+    private final int quitHeight = 100;
 
     public StartPage(AngryBirds game) {
         this.game = game;
@@ -38,9 +42,16 @@ public class StartPage implements Screen{
         batch.end();
 
         if(Gdx.input.justTouched()){
+           float touchX = Gdx.input.getX();
+           float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
             Vector2 touchpoint = new Vector2(Gdx.input.getX(),Gdx.graphics.getHeight()-Gdx.input.getY());
             if(startButton.contains(touchpoint)){
                 game.setScreen(new LevelSelection(game));
+
+            }
+            if (touchX >= quitX && touchX <= quitX + quitWidth &&
+                touchY >= quitY && touchY <= quitY + quitHeight) {
+                Gdx.app.exit();
             }
             else if(quitButton.contains(touchpoint)){
                 Gdx.app.exit();
